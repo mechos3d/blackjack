@@ -1,16 +1,22 @@
 
 head
 	link rel="stylesheet" type='text/css' href="/css/blackjack.css"
+
 body
+
 	div id="div1" class="bordered"
-		= @var1
+		= @card_deck
 	hr
+
 	div id="div2" class="bordered"
-		h1 zzzzzzzzzzzzzzzzzz
-		= @var2
+		= @player
 	hr
 
 	div id="div3" class="bordered"
+		= @dealer
+	hr
+
+	div id="div4" class="bordered"
 		table
 			tbody
 			  tr

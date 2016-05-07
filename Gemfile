@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 gem 'sinatra', '~> 1.4.7'
 gem 'slim', '~> 3.0.6'
+gem 'redis', '~> 3.3.0'
 gem 'rspec', '~> 3.4.0'
 gem 'rack', '~> 1.6'
 gem 'rack-test', '~> 0.6.3'

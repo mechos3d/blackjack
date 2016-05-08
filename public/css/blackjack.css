@@ -17,7 +17,7 @@ h1 {
 	border-color: black;
   margin-left: 15%;
   margin-right: 15%;
-  height: 150px;
+  height: 70px;
 }
 
 .bordered2 {
@@ -26,7 +26,7 @@ h1 {
   border-color: black;
   margin-left: 15%;
   margin-right: 15%;
-  height: 150px;
+  height: 70px;
 }
 
 
@@ -39,7 +39,7 @@ h1 {
 /*
 table {
 	table-layout: fixed;
-  margin-left:10%; 
+  margin-left:10%;
   margin-right:auto;
 }
 

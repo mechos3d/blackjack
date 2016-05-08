@@ -1,5 +1,4 @@
-# myapp.rb
-require 'sinatra/reloader'
+require 'sinatra/reloader' # You may want to set environment variable to development and conditionally load the gem
 require 'sinatra'
 require 'pry'
 require 'redis'
@@ -10,89 +9,113 @@ require_relative 'dealer'
 require_relative 'card_deck'
 require_relative 'card'
 
+# по окончании игры - флашить данные в редисе
 
-redis = Redis.new
 
 get '/' do
+  binding.pry
   # Первоначальный вход
-  # binding.pry
-  initialize_data
-
-  @card_deck = CardDeck.instance
-  @player = Player.instance
-  @dealer = Dealer.instance
-
-  slim :index
+  slim :start
 end
 
-get 'start' do
-  # инициализация партии -
-  # ставка, деньги пользователя, данные колоды и дилера - запись в редис под опред.ключом
-  initialize_data
+get '/game' do
+  set_player_instances
 
-  @card_deck = CardDeck.instance
-  @player = Player.instance
-  @dealer = Dealer.instance
-
-  slim :index
+  slim :game
 end
 
-# переделать все эти геты на посты
-get '/raise' do
+post '/start' do
+  set_player_and_dealer
+  initialize_data
+  get_initial_cards
+
+  redirect '/game'
+end
+
+post '/double_stake' do
   # Поднять ставку, больше ничего не менять (в будущем сделать Ajax'ом)
-  @card_deck = redis.get 'user_score'
-  @player = JSON.parse(redis.get('proba'))
-  @dealer = Dealer.instance
+  stake = redis.get 'current_stake'
+  redis.set 'current_stake', stake.to_i*2
 
-  slim :index
+  redirect '/game'
 end
 
-# переделать все эти геты на посты
-get '/hit_me' do
+post '/hit_me' do
+  user_cards = JSON.parse redis.get('user_cards')
+  user_cards += card_deck.get_cards!(1)
+  redis.set 'user_cards', user_cards
+  binding.pry
   # Дать пользовтелю карту,
   # Проверить условия выигрыша
   # Если условие выполнилось - отобразить кнопку play-again
-  @var1 = "Hit !"
 
-  slim :index
+  redirect '/game'
 end
 
-# переделать все эти геты на посты
-get '/stand' do
+post '/stand' do
   # Дилер берет карты одну-за-другой, пока не достигнет условия выигрыша.
   # На вьюшке сделать бы поочередное появление этих карт, чтобы карты появились не моментально сразу все
   # После этого появляется кнопка play-again
-  @var1 = "Stand !"
 
-  slim :index
+  redirect '/game'
 end
 
-# переделать все эти геты на посты
-get '/play-again' do
+post '/play-again' do
   # следующая партия
-  @var1 = "Play_again !"
 
-  slim :index
+  slim :game
 end
 
-# переделать все эти геты на посты
-get 'reset' do
+post '/reset' do
   # тестовое действие
+  initialize_data
+  get_initial_cards
 
-  slim :index
+  redirect '/game'
 end
 
+private
+
+def set_player_and_dealer
+  @player = Player.instance
+  @dealer = Dealer.instance
+end
+
+def calculate_score(var)
+  cards = instance_variable_get(var)
+  cards.inject(0) { |sum, i| sum += i.value }
+end
 
 def initialize_data
-  redis = Redis.new
-
+  # инициализация партии
+  player
   redis.pipelined do
     redis.set 'user_money', 1000
-    ['stake', 'user_cards','dealer_cards', 'user_score', 'dealer_score']
+    redis.set 'current_stake', 100 # TODO заглушка
+    ['user_cards', 'dealer_cards', 'user_score', 'dealer_score']
       .each { |a| redis.set a, 0 }
     redis.set('proba', [1,2,3,4].to_json)
   end
 end
+
+def get_initial_cards
+  redis.set 'dealer_cards', card_deck.get_cards!(2).to_json
+  redis.set 'user_cards', card_deck.get_cards!(2).to_json
+end
+
+def check_win_condition
+
+end
+
+
+def card_deck
+  CardDeck.instance
+end
+
+# def redis
+#   @redis ||= Redis.new
+# end
+
 # get '/hello/:name' do
 #   # matches "GET /hello/foo" and "GET /hello/bar"
 #   # params['name'] is 'foo' or 'bar'

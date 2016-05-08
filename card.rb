@@ -1,6 +1,6 @@
 class Card
 
-  attr_reader :suit, :face
+  attr_reader :suit, :face, :value
 
   def initialize(suit:, face:)
     @suit = suit
@@ -10,7 +10,7 @@ class Card
   def value # возможно вынести это куда-то, так как ace value может зависеть от определнной логики
     if face.is_a?(Fixnum)
       face
-    elsif face != 'A'
+    elsif face == 'A'
       ace_value
     else
       10

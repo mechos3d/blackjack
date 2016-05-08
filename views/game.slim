@@ -1,0 +1,39 @@
+
+head
+	link rel="stylesheet" type='text/css' href="/css/blackjack.css"
+
+body
+	- ['user_cards', 'dealer_cards', 'current_stake', 'user_score', 'dealer_score', 'user_money'].each do |var|
+
+		div id="div_#{var}" class="bordered"
+			p = var
+			= instance_variable_get("@#{var}")
+		hr
+
+	div id="div4" class="bordered"
+		table
+			tbody
+			  tr
+			    td
+			    	form action="/double_stake" method="post"
+							input type="submit" value="Double the stake" class="button"
+			    td
+		    		form action="/hit_me" method="post"
+							input type="submit" value="Hit" class="button"
+			    td
+			    	form action="/stand" method="post"
+							input type="submit" value="Stand" class="button"
+			    td
+			    	form action="/reset" method="post"
+							input type="submit" value="Reset" class="button"
+
+script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"
+script src="javascripts/black_jack.js"
+
+/ @user_cards = JSON.parse redis.get('user_cards')
+/ @dealer_cards = JSON.parse redis.get('dealer_cards')
+/ @current_stake = redis.get 'stake'
+/ @user_score = redis.get 'user_score'
+/ @dealer_score = redis.get 'dealer_score'
+/ @user_money = redis.get 'user_money'
+

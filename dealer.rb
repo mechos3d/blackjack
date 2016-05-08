@@ -1,12 +1,7 @@
 require 'singleton'
+require_relative 'subject'
 
-class Dealer
+class Dealer < Subject
   include Singleton
-
-  attr_reader :cards
-
-  def initialize
-
-  end
 
 end

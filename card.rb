@@ -20,7 +20,7 @@ class Card
   private
 
   def ace_value
-    #
+    # Aces are worth 1 or 11 - whichever is preferable at the moment
     11
   end
 

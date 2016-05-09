@@ -9,6 +9,7 @@ gem 'rack-test', '~> 0.6.3'
 gem 'thin', '~> 1.6.4'
 gem 'sinatra-contrib', '~> 1.4.6'
 gem 'capybara', '~> 2.6.2'
+gem 'sinatra-formhelpers', '~> 0.4.0'
 
 # gem 'sidekiq-throttler', github: 'viphat/sidekiq-throttler', branch: 'master'
 # gem 'sidekiq-cron', '~> 0.4.0'

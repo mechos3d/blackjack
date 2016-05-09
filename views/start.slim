@@ -5,12 +5,15 @@ head
 body
 
 div id="div4" class="bordered"
-	table
-		tbody
-		  tr
-		    td
-		    	form action="/start" method="post"
-						input type="submit" value="Start the game" class="button"
+  table
+    tbody
+      tr
+        td
+          form action="/start" method="post"
+            input type="text" name='stake' value='0'
+            br
+            input type="submit" value="Start the game" class="button"
+
 
 / script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"
 / script src="javascripts/black_jack.js"

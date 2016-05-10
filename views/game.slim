@@ -60,8 +60,10 @@ body
 			tbody
 			  tr
 			    td
-			    	form action="/double_stake" method="post"
-			    		input type="submit" value="Double the stake" class="button"
+			    	= form('/double_stake', :post)
+			    	= submit
+			    	/ form action="/double_stake" method="post"
+			    	/	input type="submit" value="Double the stake" class="button"
 			    td
 		    		form action="/hit_me" method="post"
 							input type="submit" value="Hit" class="button"
@@ -78,3 +80,7 @@ body
 
 script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"
 script src="javascripts/black_jack.js"
+
+
+/ <%= form('/users', :post) %>
+/ <%= input(:user, :first_name) %>

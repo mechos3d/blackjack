@@ -12,7 +12,7 @@ h1 {
 }*/
 
 .bordered {
-	color: red;
+	color: black;
 	border: 1px solid;
 	border-color: black;
   margin-left: 15%;
@@ -21,7 +21,7 @@ h1 {
 }
 
 .bordered2 {
-  color: green;
+  color: black;
   border: 1px solid;
   border-color: black;
   margin-left: 15%;

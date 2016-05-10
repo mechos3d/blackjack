@@ -1,4 +1,3 @@
-
 head
 	link rel="stylesheet" type='text/css' href="/css/blackjack.css"
 
@@ -10,7 +9,7 @@ body
 			  tr
 					- @player.cards&.each do |card|
 						td
-							= "#{card.face}:#{card.suit};  "
+							= "#{card.face}:#{card.suit}___"
 						/ здесь будут бутстраповые дивы вместо таблицы
 	hr
 
@@ -34,53 +33,48 @@ body
 		table
 			tbody
 			  tr
-					- @dealer.cards&.each do |card|
+		  		- @dealer.cards&.each_with_index do |card, index|
 						td
-							= "#{card.face}:#{card.suit};  "
-						/ здесь будут бутстраповые дивы вместо таблицы
-
-
+							- if !@win_lose && index == 0
+								= "XXX___"
+							- else
+								= "#{card.face}:#{card.suit}___"
 	hr
 
 	div id="div_2" class="bordered"
-		p Dealer_score
-		= @dealer.score
+		- if @win_lose
+			p Dealer_score
+			= @dealer.score
 	hr
 
 	div id="div_win_lose" class="bordered"
-		p Win
-		= 'Yes' if @win_lose == 'win'
+		- case @win_lose
+		- when 'win'
+			p style="color: blue;" WIN
+		- when 'lose'
+			p style="color: red;" LOSE
+		- when 'tie'
+			p style="color: green;" TIE
 
 	div id="div_win_lose" class="bordered"
-		p Lose
-		= 'Yes' if @win_lose == 'lose'
+
 
 	div id="div4" class="bordered"
 		table
 			tbody
 			  tr
 			    td
-			    	= form('/double_stake', :post)
-			    	= submit
-			    	/ form action="/double_stake" method="post"
-			    	/	input type="submit" value="Double the stake" class="button"
+			    	== form("/double_stake", :post)
+			    		== submit 'Double the stake', class: "button", disabled: @stake_doubled || @win_lose
 			    td
-		    		form action="/hit_me" method="post"
-							input type="submit" value="Hit" class="button"
+			    	== form("/hit_me", :post)
+			    		== submit 'Hit', class: "button", disabled: @win_lose
 			    td
-			    	form action="/stand" method="post"
-							input type="submit" value="Stand" class="button"
+			    	== form("/stand", :post)
+			    		== submit 'Stand', class: "button", disabled: @win_lose
 			    td
-			    	form action="/reset" method="post"
-							input type="submit" value="Reset" class="button"
-			    td
-			    	form action="/another_round" method="post"
-							input type="submit" value="Another round" class="button"
-
+			    	== form("/another_round", :post)
+			    		== submit 'Another round', class: "button", disabled: (@win_lose ? nil : true)
 
 script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"
 script src="javascripts/black_jack.js"
-
-
-/ <%= form('/users', :post) %>
-/ <%= input(:user, :first_name) %>

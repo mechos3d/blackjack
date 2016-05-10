@@ -14,103 +14,79 @@ require_relative 'dealer'
 require_relative 'card_deck'
 require_relative 'card'
 
-# по окончании игры - флашить данные в редисе
-# ничья сейчас не реализована. Равный счет считается проигрышем игрока
-# не реализована первоначальная ставка
-# реализовать проверку на достаточное кол-во карт в колоде
-# (игра заканчивается когда: либо закончились деньги у пользователя, либо кончились карты в колоде)
+# по окончании игры - флашить данные в редисе (поставить stale время)
+# добавить проверки на закончившиеся деньги у игрока
+# скрыть на вьюхе счет дилера и одну карту. Показываем всё это только после выигрыша-проигрыша
+# безопасность - не давать пользователю отправить запрос уже после выигрыша и до ресета (кнопки на вьюхе задизэйблены, но урл он может вбить вручную)
 
 get '/' do
   # Первоначальный вход
+  reset_game
+  player.reset_money
+
   slim :start
 end
 
-get '/game' do # Win или lose - Лучше показывать сразу на этой же вьюхе.
-  player; dealer
+get '/set_stake' do
+  slim :set_stake
+end
 
+get '/game' do
+  player; dealer
+  @player.stand? ? check_2nd_win_condition : check_1st_win_condition
+  
   slim :game
 end
 
 post '/start' do
   unless params['stake'] && params['stake'].to_i > 0
     # поставить гем flash и передавать сообщение во флэше
-    redirect '/'
+    redirect '/set_stake'
   end
 
-  reset_game
   get_initial_cards
   set_stake
-
   redirect '/game'
 end
 
-post '/double_stake' do
-  #(в будущем сделать Ajax'ом)
+post '/double_stake' do  #(в будущем сделать Ajax'ом)
   player.double_stake
-
-  redirect '/game'
+  dealer
+  @stake_doubled = true
+  slim :game
 end
 
-post '/hit_me' do
+post '/hit_me' do  #(в будущем сделать Ajax'ом)
+  # здесь тоже сделать проверку на количество карт
   player.give_cards 1
-  check_1st_win_condition
-
-  redirect '/game'
+  redirect '/game' # может это сделать везде не редиректом, а просто вызовом метода ?
 end
 
 post '/stand' do
+  # здесь тоже сделать проверку на количество карт
+  player.stand = 1
   dealer.get_cards_to_score_17
-  check_2nd_win_condition
-
   redirect '/game'
 end
 
 post '/another_round' do
-  # TODO - проверка на количество доступных карт в колоде
-  reset_round
-  get_initial_cards
-  set_stake # о ставке пользователя нужно снова спрашивать, как в самом начале
-  # поэтому здесь возможно редирект не на game
-
-  slim :game
-end
-
-post '/reset' do
-  # тестовое действие
-  reset_game
-  get_initial_cards
-
-  redirect '/game'
-end
-
-get '/lose' do
-  @win_lose = 'lose'
-  player; dealer
-
-  slim :game
-end
-
-get '/win' do
-  @win_lose = 'win'
-  player; dealer
-
-  slim :game
+  if card_deck.not_enough_cards?
+    slim :no_cards 
+  else
+    reset_round
+    redirect '/set_stake'
+  end
 end
 
 private
 
 def reset_game
-  player.reset(reset_money: true)
-  dealer.reset
-  card_deck.reset
-  # set_stake
+  [player, dealer, card_deck].each(&:reset)
   @win_lose = nil
 end
 
 def reset_round
-  player.reset(reset_money: false)
-  dealer.reset
-  # set_stake
+  [player, dealer].each(&:reset)
   @win_lose = nil
 end
 
@@ -126,8 +102,12 @@ end
 def check_1st_win_condition
   if player.score > 21
     player_lost
-  elsif player.score == 21
+  elsif player.score == 21 && dealer.score < 21
     player_won
+  elsif player.score == 21 && player.score == 21
+    player_tie
+  elsif dealer.score == 21
+    player_lost
   end
 end
 
@@ -136,6 +116,8 @@ def check_2nd_win_condition
     player_won
   elsif player.score > dealer.score
     player_won
+  elsif player.score == dealer.score
+    player_tie
   else
     player_lost
   end
@@ -143,14 +125,16 @@ end
 
 def player_lost
   player.money -= player.stake
-
-  redirect '/lose'
+  @win_lose = 'lose'
 end
 
 def player_won
   player.money += player.stake
+  @win_lose = 'win'
+end
 
-  redirect '/win'
+def player_tie
+  @win_lose = 'tie'
 end
 
 def player

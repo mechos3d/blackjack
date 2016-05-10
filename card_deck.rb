@@ -16,7 +16,6 @@ class CardDeck
   end
 
   def cards
-    # File.open('temp_log', 'a') { |file| file.write("#{redis.get('cards').size} \n") }
     return [] unless redis.get 'cards'
     JSON.parse redis.get('cards')
   rescue JSON::ParserError
@@ -38,6 +37,10 @@ class CardDeck
   def reset
     cards =(0..51).to_a.shuffle
     redis.set 'cards', cards.to_json
+  end
+
+  def not_enough_cards?
+    self.cards.size < 4
   end
 
   private

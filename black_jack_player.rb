@@ -23,10 +23,8 @@ module BlackJackPlayer
     redis.set "#{subject}_cards", new_cards_array.to_json
   end
 
-  def reset(reset_money: true)
+  def reset
     redis.pipelined do
-      redis.set "#{subject}_money", 1000 if reset_money
-      redis.set "#{subject}_stake", 0
       redis.set "#{subject}_cards", [].to_json
       redis.set "#{subject}_score", 0
     end

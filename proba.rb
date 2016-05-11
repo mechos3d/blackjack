@@ -16,7 +16,6 @@ require_relative 'card'
 
 # по окончании игры - флашить данные в редисе (поставить stale время)
 # добавить проверки на закончившиеся деньги у игрока
-# скрыть на вьюхе счет дилера и одну карту. Показываем всё это только после выигрыша-проигрыша
 # безопасность - не давать пользователю отправить запрос уже после выигрыша и до ресета (кнопки на вьюхе задизэйблены, но урл он может вбить вручную)
 
 get '/' do
@@ -32,9 +31,8 @@ get '/set_stake' do
 end
 
 get '/game' do
-  player; dealer
-  @player.stand? ? check_2nd_win_condition : check_1st_win_condition
-  
+  set_variables_check_win_conditions
+
   slim :game
 end
 
@@ -44,9 +42,11 @@ post '/start' do
     redirect '/set_stake'
   end
 
-  get_initial_cards
   set_stake
-  redirect '/game'
+  get_initial_cards
+
+  set_variables_check_win_conditions
+  slim :game
 end
 
 post '/double_stake' do  #(в будущем сделать Ajax'ом)
@@ -59,26 +59,35 @@ end
 post '/hit_me' do  #(в будущем сделать Ajax'ом)
   # здесь тоже сделать проверку на количество карт
   player.give_cards 1
-  redirect '/game' # может это сделать везде не редиректом, а просто вызовом метода ?
+
+  set_variables_check_win_conditions
+  slim :game
 end
 
 post '/stand' do
   # здесь тоже сделать проверку на количество карт
   player.stand = 1
   dealer.get_cards_to_score_17
-  redirect '/game'
+
+  set_variables_check_win_conditions
+  slim :game
 end
 
 post '/another_round' do
   if card_deck.not_enough_cards?
-    slim :no_cards 
+    slim :no_cards
   else
     reset_round
-    redirect '/set_stake'
+    slim :set_stake
   end
 end
 
 private
+
+def set_variables_check_win_conditions
+  player; dealer
+  @player.stand? ? check_2nd_win_condition : check_1st_win_condition
+end
 
 def reset_game
   [player, dealer, card_deck].each(&:reset)

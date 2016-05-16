@@ -28,7 +28,9 @@ require File.expand_path '../../proba.rb', __FILE__
 
 module RSpecMixin
   include Rack::Test::Methods
-  def app() Sinatra::Application end
+  def app
+    Sinatra::Application
+  end
 end
 
 Capybara.app = Sinatra::Application
@@ -37,9 +39,9 @@ RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate
   # assertion/expectation library such as wrong or the stdlib/minitest
   # assertions if you prefer.
-  
+
   config.include Capybara::DSL
-  config.include RSpecMixin 
+  config.include RSpecMixin
 
   config.expect_with :rspec do |expectations|
     # This option will default to `true` in RSpec 4. It makes the `description`

@@ -1,4 +1,5 @@
-require 'sinatra/reloader' # You may want to set environment variable to development and conditionally load the gem
+require 'sinatra/reloader' # You may want to set environment variable \
+# to development and conditionally load the gem
 require 'sinatra'
 
 require 'rubygems'
@@ -14,11 +15,6 @@ require_relative 'dealer'
 require_relative 'card_deck'
 require_relative 'card'
 
-# поставить гем flash и передавать сообщение во флэше
-# по окончании игры - флашить данные в редисе (поставить stale время)
-# добавить проверки на закончившиеся деньги у игрока
-# безопасность - не давать пользователю отправить запрос уже после выигрыша и до ресета (кнопки на вьюхе задизэйблены, но урл он может вбить вручную)
-
 get '/' do
   # Первоначальный вход
   player.reset_money # if ...
@@ -28,32 +24,36 @@ end
 
 post '/start_game_set' do
   reset_game
+  set_default_stake_value
+
   slim :set_stake
 end
 
 post '/start_round' do
-  unless params['stake'] && params['stake'].to_i > 0
-    # здесь проверка на достаточное количество денег у игрока
+  redirect '/set_stake' unless params['stake'] && params['stake'].to_i > 0
+  if params['stake'].to_i > player.money
+    # set flash message
     redirect '/set_stake'
   end
 
   set_stake
-  get_initial_cards
+  take_initial_cards
   check_win_conditions
 
   slim :game
 end
 
 get '/set_stake' do
+  set_default_stake_value
   slim :set_stake
 end
 
 post '/double_stake' do
-  if player.money >= player.stake*2
+  if player.money >= player.stake * 2
     player.double_stake
     @stake_doubled = :doubled
   else
-    @stake_doubled = :not_doubled
+    @stake_doubled = :not_enough_money
   end
 
   set_variables
@@ -74,19 +74,27 @@ post '/stand' do
   check_enough_cards_left
 
   player.stand = 1
-  dealer.get_cards_to_score_17
+  dealer.take_cards_to_score_17
 
   check_win_conditions
   slim :game
 end
 
 post '/another_round' do
-  # здесь тоже нужно проверить деньги игрока и не давать начать новый раунд с сообщением причины на странице
+  if player.money == 0
+    # set_flash_message
+    set_variables
+    @win_lose = 'lose'
+    @player_no_money_left = true
+    slim :game
+  else
 
-  check_enough_cards_left
+    check_enough_cards_left
+    reset_round
 
-  reset_round
-  slim :set_stake
+    set_default_stake_value
+    slim :set_stake
+  end
 end
 
 get '/no_cards' do
@@ -100,11 +108,12 @@ def check_enough_cards_left
 end
 
 def set_variables
-  player; dealer
+  player
+  dealer
 end
 
 def check_win_conditions
-  player.stand? ? check_2nd_win_condition : check_1st_win_condition
+  player.stand? ? check_stand_win_condition : check_hit_win_condition
 end
 
 def reset_game
@@ -117,7 +126,7 @@ def reset_round
   @win_lose = nil
 end
 
-def get_initial_cards
+def take_initial_cards
   player.give_cards 2
   dealer.give_cards 2
 end
@@ -126,19 +135,21 @@ def set_stake
   player.stake = params['stake'].to_i
 end
 
-def check_1st_win_condition
+def set_default_stake_value
+  @default_stake = player.money >= 50 ? 50 : player.money
+end
+
+def check_hit_win_condition
   if player.score > 21
     player_lost
-  elsif player.score == 21 && dealer.score < 21
-    player_won
-  elsif player.score == 21 && player.score == 21
-    player_tie
+  elsif player.score == 21
+    dealer.score == 21 ? player_tie : player_won
   elsif dealer.score == 21
     player_lost
   end
 end
 
-def check_2nd_win_condition
+def check_stand_win_condition
   if dealer.score > 21
     player_won
   elsif player.score > dealer.score
@@ -165,13 +176,28 @@ def player_tie
 end
 
 def player
-  @player ||= Player.instance
+  @player = Player.instance
 end
 
 def dealer
-  @dealer ||= Dealer.instance
+  @dealer = Dealer.instance
 end
 
 def card_deck
   CardDeck.instance
+end
+
+helpers do
+  def button_disabled?(button)
+    case button
+    when :another_round
+      if @player_no_money_left
+        true
+      elsif @win_lose
+        nil
+      else
+        true
+      end
+    end
+  end
 end

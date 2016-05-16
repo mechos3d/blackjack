@@ -8,7 +8,7 @@ class CardDeck
   def initialize
     @card_instances = []
     [:clubs, :diamonds, :hearts, :spades].each do |suit|
-      [2,3,4,5,6,7,8,9,10,'J','Q','K','A'].each do |face|
+      [2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A'].each do |face|
         @card_instances << Card.new(suit: suit, face: face)
       end
     end
@@ -31,16 +31,16 @@ class CardDeck
   end
 
   def card_instance(n)
-    self.card_instances[n].dup
+    card_instances[n].dup
   end
 
   def reset
-    cards =(0..51).to_a.shuffle
+    cards = (0..51).to_a.shuffle
     redis.set 'cards', cards.to_json
   end
 
   def not_enough_cards?
-    self.cards.size < 4
+    cards.size < 4
   end
 
   private
@@ -49,8 +49,7 @@ class CardDeck
     @redis ||= Redis.new
   end
 
-  def set_cards(arr) # for testing purposes
+  def cards=(arr)
     redis.set 'cards', arr.to_json
   end
-
 end

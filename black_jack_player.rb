@@ -1,13 +1,11 @@
 module BlackJackPlayer
-
   def score
     cards.inject(0) do |sum, i|
       if i.face == 'A' && sum > 10
-        sum += 1 # особая логика для туза - его стоитость 11 или 1
+        sum + 1 # особая логика для туза - его стоитость 11 или 1
       else
-        sum += i.value
+        sum + i.value
       end
-      sum
     end
   end
 
@@ -34,7 +32,7 @@ module BlackJackPlayer
 
   def cards_array
     return [] unless redis.get "#{subject}_cards"
-    JSON.parse(redis.get "#{subject}_cards")
+    JSON.parse(redis.get("#{subject}_cards"))
   end
 
   def card_deck
@@ -48,5 +46,4 @@ module BlackJackPlayer
   def redis
     @redis ||= Redis.new
   end
-
 end

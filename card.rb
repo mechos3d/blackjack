@@ -1,5 +1,4 @@
 class Card
-
   attr_reader :suit, :face, :value
 
   def initialize(suit:, face:)
@@ -7,7 +6,7 @@ class Card
     @face = face
   end
 
-  def value # возможно вынести это куда-то, так как ace value может зависеть от определнной логики
+  def value
     if face.is_a?(Fixnum)
       face
     elsif face == 'A'
@@ -23,6 +22,4 @@ class Card
     # Aces are worth 1 or 11 - whichever is preferable at the moment
     11
   end
-
-
 end

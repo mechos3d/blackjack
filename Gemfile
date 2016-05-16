@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+# application
 gem 'sinatra', '~> 1.4.7'
 gem 'slim', '~> 3.0.6'
 gem 'redis', '~> 3.3.0'
@@ -11,3 +12,5 @@ gem 'sinatra-contrib', '~> 1.4.6'
 gem 'capybara', '~> 2.6.2'
 gem 'sinatra-formhelpers-ng'
 
+# development
+gem 'rubocop', '~> 0.36.0', require: false

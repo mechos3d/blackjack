@@ -17,11 +17,11 @@ class Player
   end
 
   def double_stake
-    self.stake = self.stake*2
+    self.stake *= stake
   end
 
   def stand?
-    self.stand != 0
+    stand != 0
   end
 
   def reset
@@ -36,5 +36,4 @@ class Player
   def reset_money
     redis.set "#{subject}_money", 1000
   end
-
 end

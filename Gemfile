@@ -14,3 +14,4 @@ gem 'sinatra-formhelpers-ng'
 
 # development
 gem 'rubocop', '~> 0.36.0', require: false
+gem 'pry'

@@ -10,16 +10,9 @@ class Card
     if face.is_a?(Fixnum)
       face
     elsif face == 'A'
-      ace_value
+      11
     else
       10
     end
-  end
-
-  private
-
-  def ace_value
-    # Aces are worth 1 or 11 - whichever is preferable at the moment
-    11
   end
 end

@@ -23,7 +23,7 @@ class BlackJackApp < Sinatra::Base
 
   get '/' do
     # Первоначальный вход
-    player.reset_money # if ...
+    player.reset_money # TODO - после появления сессий ресетить деньги по условию и не в этом действии (не в get'e)
 
     slim :start
   end
@@ -196,7 +196,6 @@ class BlackJackApp < Sinatra::Base
   end
 
   helpers do
-
     def button_disabled?(button)
       case button
       when :another_round

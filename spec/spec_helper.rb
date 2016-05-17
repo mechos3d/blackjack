@@ -24,16 +24,17 @@ require 'capybara/rspec'
 ENV['RACK_ENV'] = 'test'
 
 require File.expand_path '../../blackjack.rb', __FILE__
-require File.expand_path '../../proba.rb', __FILE__
 
 module RSpecMixin
   include Rack::Test::Methods
   def app
-    Sinatra::Application
+    BlackJackApp
   end
 end
 
-Capybara.app = Sinatra::Application
+Capybara.app = BlackJackApp
+Capybara.default_driver = :rack_test # to use js in tests - change web-driver to selenium of poltergeist
+
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate

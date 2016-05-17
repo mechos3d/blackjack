@@ -1,7 +1,9 @@
 require 'singleton'
+require_relative 'redis_persistence'
 
 class CardDeck
   include Singleton
+  include RedisPersistence
 
   attr_reader :card_instances
 
@@ -12,21 +14,18 @@ class CardDeck
         @card_instances << Card.new(suit: suit, face: face)
       end
     end
-    reset unless redis.get 'cards'
+    reset unless cards
   end
 
   def cards
-    return [] unless redis.get 'cards'
-    JSON.parse redis.get('cards')
-  rescue JSON::ParserError
-    return []
+    get_value('cards')
   end
 
   def take(n)
     return [] unless n.to_i > 0
     # предусмотреть обработку ситуации, когда n > @cards.size
     taken_cards = cards.take(n)
-    redis.set 'cards', cards[n..-1].to_json
+    set_value('cards', cards[n..-1])
     taken_cards
   end
 
@@ -35,21 +34,18 @@ class CardDeck
   end
 
   def reset
-    cards = (0..51).to_a.shuffle
-    redis.set 'cards', cards.to_json
+    cards = Array(0..51).shuffle
+    set_value('cards', cards)
   end
 
   def not_enough_cards?
+    return true unless cards
     cards.size < 4
   end
 
   private
 
-  def redis
-    @redis ||= Redis.new
-  end
-
   def cards=(arr)
-    redis.set 'cards', arr.to_json
+    set_value('cards', arr)
   end
 end

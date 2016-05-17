@@ -1,53 +1,59 @@
 require 'sinatra/reloader'
 require 'sinatra/base'
-
 require 'rubygems'
 require 'sinatra/form_helpers'
 require 'slim'
-
 require 'pry'
 require 'redis'
 require 'json'
 
-require_relative 'player'
-require_relative 'dealer'
-require_relative 'card_deck'
-require_relative 'card'
+require_relative './models/player'
+require_relative './models/dealer'
+require_relative './models/card_deck'
+require_relative './models/card'
+
+# TODO - сейчас по нажатию f5 программа разрешает повторную отправку данных формы - это нужно починить
+# для этого - делаем redirects из каждого post-action'а (c назнааемыми инстанс-переменными тогда придется разобраться)
 
 class BlackJackApp < Sinatra::Base
+  run! if __FILE__ == $0
+
   helpers Sinatra::FormHelpers
   configure :development do
     register Sinatra::Reloader
   end
-  # make before_filter with 'set_variables'
+
+  attr_reader :player, :dealer
+
+  before do
+    set_variables
+  end
 
   get '/' do
     # Первоначальный вход
     player.reset_money # TODO - после появления сессий ресетить деньги по условию и не в этом действии (не в get'e)
-
     slim :start
   end
 
-  post '/start_game_set' do
-    reset_game
-    set_default_stake_value
+  get '/game' do
+    check_win_conditions
+    slim :game
+  end
 
-    slim :set_stake
+  post '/start_game_set' do
+    reset(:game)
+    redirect '/set_stake'
   end
 
   post '/start_round' do
-    redirect '/set_stake' unless params['stake'] && params['stake'].to_i > 0
-    if params['stake'].to_i > player.money
-      # set flash message
-      redirect '/set_stake'
-    end
-
+    # если юзер нажмет "назад" - он передходит на страницу set_stake - и может
+    # снова начать раунд (ему накидываются еще карты поверх существующих и он
+    # проигрывает, и так бесконечно. нужно здесь как-то проверять, находится ли юзер в игре в данный момент (persistence?))
+    redirect '/set_stake' if stake_impossible?
     set_stake
     take_initial_cards
-    check_win_conditions
 
-    set_variables
-    slim :game
+    redirect '/game'
   end
 
   get '/set_stake' do
@@ -55,6 +61,7 @@ class BlackJackApp < Sinatra::Base
     slim :set_stake
   end
 
+  # переменные stake_doubled - сломаны, нужно починить ! (они теряются при редиректе)
   post '/double_stake' do
     if player.money >= player.stake * 2
       player.double_stake
@@ -63,46 +70,36 @@ class BlackJackApp < Sinatra::Base
       @stake_doubled = :not_enough_money
     end
 
-    set_variables
-    slim :game
+    redirect '/game'
   end
 
   post '/hit_me' do
     check_enough_cards_left
-
     player.give_cards 1
-    check_win_conditions
 
-    set_variables
-    slim :game
+    redirect '/game'
   end
 
   post '/stand' do
     check_enough_cards_left
-
     player.stand = 1
     dealer.take_cards_to_score_17
-    check_win_conditions
 
-    set_variables
-    slim :game
+    redirect '/game'
   end
 
   post '/another_round' do
-    if player.money == 0
-      # set_flash_message
-      @win_lose = 'lose'
-      @player_no_money_left = true
+    redirect '/game_over' if player.money == 0
+    check_enough_cards_left
+    reset(:round)
 
-      set_variables
-      slim :game
-    else
+    redirect '/set_stake'
+  end
 
-      check_enough_cards_left
-      reset_round
-
-      redirect '/set_stake'
-    end
+  get '/game_over' do
+    @win_lose = 'lose'
+    @player_no_money_left = true
+    slim :game
   end
 
   get '/no_cards' do
@@ -115,36 +112,22 @@ class BlackJackApp < Sinatra::Base
     redirect '/no_cards' if card_deck.not_enough_cards?
   end
 
+  def stake_impossible?
+    return true unless params['stake'] && params['stake'].to_i > 0
+    params['stake'].to_i > player.money
+  end
+
   def set_variables
-    player
-    dealer
+    @player = Player.instance
+    @dealer = Dealer.instance
+  end
+
+  def card_deck
+    CardDeck.instance
   end
 
   def check_win_conditions
     player.stand? ? check_stand_win_condition : check_hit_win_condition
-  end
-
-  def reset_game
-    [player, dealer, card_deck].each(&:reset)
-    @win_lose = nil
-  end
-
-  def reset_round
-    [player, dealer].each(&:reset)
-    @win_lose = nil
-  end
-
-  def take_initial_cards
-    player.give_cards 2
-    dealer.give_cards 2
-  end
-
-  def set_stake
-    player.stake = params['stake'].to_i
-  end
-
-  def set_default_stake_value
-    @default_stake = player.money >= 50 ? 50 : player.money
   end
 
   def check_hit_win_condition
@@ -169,6 +152,25 @@ class BlackJackApp < Sinatra::Base
     end
   end
 
+  def reset(subject = :round)
+    [player, dealer].each(&:reset)
+    @win_lose = nil
+    card_deck.reset if subject == :game
+  end
+
+  def take_initial_cards
+    player.give_cards 2
+    dealer.give_cards 2
+  end
+
+  def set_stake
+    player.stake = params['stake'].to_i
+  end
+
+  def set_default_stake_value
+    @default_stake = player.money >= 50 ? 50 : player.money
+  end
+
   def player_lost
     player.money -= player.stake
     @win_lose = 'lose'
@@ -181,18 +183,6 @@ class BlackJackApp < Sinatra::Base
 
   def player_tie
     @win_lose = 'tie'
-  end
-
-  def player
-    @player = Player.instance
-  end
-
-  def dealer
-    @dealer = Dealer.instance
-  end
-
-  def card_deck
-    CardDeck.instance
   end
 
   helpers do
@@ -209,4 +199,5 @@ class BlackJackApp < Sinatra::Base
       end
     end
   end
+
 end

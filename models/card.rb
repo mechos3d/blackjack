@@ -6,11 +6,11 @@ class Card
     @face = face
   end
 
-  def value
+  def value(sum = 0)
     if face.is_a?(Fixnum)
       face
     elsif face == 'A'
-      11
+      sum > 10 ? 1 : 11 # туз имеет особую логику подсчета - отразить это в тестах
     else
       10
     end

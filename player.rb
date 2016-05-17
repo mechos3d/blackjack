@@ -17,7 +17,7 @@ class Player
   end
 
   def double_stake
-    self.stake *= stake
+    self.stake *= 2
   end
 
   def stand?

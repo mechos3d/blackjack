@@ -12,9 +12,6 @@ require_relative './models/dealer'
 require_relative './models/card_deck'
 require_relative './models/card'
 
-# TODO - сейчас по нажатию f5 программа разрешает повторную отправку данных формы - это нужно починить
-# для этого - делаем redirects из каждого post-action'а (c назнааемыми инстанс-переменными тогда придется разобраться)
-
 class BlackJackApp < Sinatra::Base
   run! if __FILE__ == $0
 
@@ -61,21 +58,14 @@ class BlackJackApp < Sinatra::Base
     slim :set_stake
   end
 
-  # переменные stake_doubled - сломаны, нужно починить ! (они теряются при редиректе)
   post '/double_stake' do
-    if player.money >= player.stake * 2
-      player.double_stake
-      @stake_doubled = :doubled
-    else
-      @stake_doubled = :not_enough_money
-    end
-
+    player.double_stake
     redirect '/game'
   end
 
   post '/hit_me' do
     check_enough_cards_left
-    player.give_cards 1
+    player.give_cards(1)
 
     redirect '/game'
   end

@@ -10,9 +10,9 @@ module RedisPersistence
     redis.get(key)
   end
 
-  def set_values(key_values_hash)
+  def set_values(values_hash)
     redis.pipelined do
-      key_values_hash.each_pair do |key, value|
+      values_hash.each_pair do |key, value|
         redis.set(key, prepare(value))
       end
     end

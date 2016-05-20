@@ -2,9 +2,7 @@ require 'singleton'
 require_relative 'black_jack_player'
 
 class Player < BlackJackPlayer
-  # include Singleton
-
-  [:money, :stake, :stand].each do |method_name|
+  [:money, :stake, :stand, :stake_state].each do |method_name|
     define_method(method_name) do
       get_value("#{subject}.#{method_name}")&.to_i || 0
     end
@@ -15,7 +13,12 @@ class Player < BlackJackPlayer
   end
 
   def double_stake
-    self.stake *= 2
+    if money > stake * 2
+      self.stake *= 2
+      stake_state = :doubled
+    else
+      stake_state = :not_enough_money
+    end
   end
 
   def stand?
@@ -26,7 +29,8 @@ class Player < BlackJackPlayer
     set_values("#{subject}.stake" => 0,
                "#{subject}.cards" => [],
                "#{subject}.score" => 0,
-               "#{subject}.stand" => 0)
+               "#{subject}.stand" => 0,
+               "#{subject}.stake_state" => 0)
   end
 
   def reset_money

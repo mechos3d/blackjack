@@ -1,24 +1,20 @@
 require 'singleton'
 require_relative 'redis_persistence'
+require_relative 'card'
 
 class CardDeck
   include Singleton
   include RedisPersistence
 
-  attr_reader :card_instances
+  CARD_INSTANCES =
+    [:clubs, :diamonds, :hearts, :spades]
+      .product([2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A'])
+        .each_with_index.map do |arr, i|
+          Card.new(suit: arr[0], face: arr[1]).freeze
+        end.freeze
 
   def initialize
-    @card_instances = []
-    [:clubs, :diamonds, :hearts, :spades].each do |suit|
-      [2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A'].each do |face|
-        @card_instances << Card.new(suit: suit, face: face)
-      end
-    end
     reset unless cards
-  end
-
-  def cards
-    get_value('cards')
   end
 
   def take(n)
@@ -29,10 +25,6 @@ class CardDeck
     taken_cards
   end
 
-  def card_instance(n)
-    card_instances[n].dup
-  end
-
   def reset
     cards = Array(0..51).shuffle
     set_value('cards', cards)
@@ -41,6 +33,10 @@ class CardDeck
   def not_enough_cards?
     return true unless cards
     cards.size < 4
+  end
+
+  def cards
+    get_value('cards')
   end
 
   private

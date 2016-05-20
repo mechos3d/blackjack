@@ -66,11 +66,11 @@ body
 			tbody
 			  tr
 			    td
-			    	- if @stake_doubled == 'not_enough_money'
-			    		p Недостаточно денег, ставка не удвоена.
+			    	- if player.stake_state == 'not_enough_money'
+			    		p Ставка не удвоена: недостаточно денег.
 				    - else
 				    	== form("/double_stake", :post)
-				    		== submit 'Double the stake', class: "button", disabled: @stake_doubled || @win_lose
+				    		== submit 'Double the stake', class: "button", disabled: player.stake_state == 'doubled' || @win_lose
 
 			    td
 			    	== form("/hit_me", :post)

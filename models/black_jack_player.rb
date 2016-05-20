@@ -11,13 +11,13 @@ class BlackJackPlayer
   def cards
     return [] unless get_value("#{subject}.cards")
     cards_array.map do |card_index|
-      card_deck.card_instance(card_index)
+      CardDeck::CARD_INSTANCES[card_index]
     end
   end
 
   def give_cards(n)
-    new_cards_array = cards_array + card_deck.take(n)
-    set_value("#{subject}.cards", new_cards_array)
+    given_cards = card_deck.take(n)
+    set_value("#{subject}.cards", (cards_array + given_cards))
   end
 
   def reset
@@ -26,6 +26,10 @@ class BlackJackPlayer
   end
 
   private
+
+  def cards_array=(arr)
+    set_value("#{subject}.cards", arr)
+  end
 
   def cards_array
     get_value("#{subject}.cards") || []
@@ -38,4 +42,5 @@ class BlackJackPlayer
   def subject
     self.class.to_s.downcase
   end
+
 end

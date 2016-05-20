@@ -20,6 +20,8 @@
 require 'rack/test'
 require 'rspec'
 require 'capybara/rspec'
+require 'pry'
+require_relative 'helper_methods'
 
 ENV['RACK_ENV'] = 'test'
 
@@ -34,7 +36,6 @@ end
 
 Capybara.app = BlackJackApp
 Capybara.default_driver = :rack_test # to use js in tests - change web-driver to selenium of poltergeist
-
 
 RSpec.configure do |config|
   # rspec-expectations config goes here. You can use an alternate

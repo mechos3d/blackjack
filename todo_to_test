@@ -1,20 +1,20 @@
 to test:
 
-- 'score' method from black_jack_player class (с различным набором карт)
+## - 'score' method from black_jack_player class (с различным набором карт)
 
-- 'cards' method from black_jack_player class (тестить, что возвращает именно инстансы и именно те)
+## - 'cards' method from black_jack_player class (тестить, что возвращает именно инстансы и именно те)
 
-- 'give_cards' method from black_jack_player class (с парой наборов карт и со случаем, когда в card_deck карт недостаточно - что должно произойти ?)
+## - 'give_cards' method from black_jack_player class (с парой наборов карт и со случаем, когда в card_deck карт недостаточно - что должно произойти ?)
 
 - 'reset' method for dealer
 
 - 'reset' method for player
 
-- [:money, :stake, :stand].each - все эти сеттеры и геттеры у player'a
+- [:money, :stake, :stand].each - все эти сеттеры и геттеры у player''a
 
-- 'take_cards_to_score_17' method for dealer
+## - 'take_cards_to_score_17' method for dealer
 
-- 'value' method for card.rb (с различными картами, отразить логику туза)
+## - 'value' method for card.rb (с различными картами, отразить логику туза)
 
 - 'initialize' for card_deck (то, что колода наполняется, при инициализации и не наполняется, если в редисе уже есть значение
 

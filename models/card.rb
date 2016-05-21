@@ -6,19 +6,18 @@ class Card
     @face = face
   end
 
-  def ==(other_card)
-    return false unless other_card.is_a? Card
-    suit == other_card.suit && face == other_card.face
+  def ==(other)
+    return false unless other.is_a? Card
+    suit == other.suit && face == other.face
   end
 
   def value(sum = 0)
     if face.is_a?(Fixnum)
       face
     elsif face == 'A'
-      sum > 10 ? 1 : 11 # туз имеет особую логику подсчета - отразить это в тестах
+      sum > 10 ? 1 : 11 # туз имеет особую логику подсчета
     else
       10
     end
   end
-
 end

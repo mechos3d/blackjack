@@ -16,6 +16,7 @@ end
 
 group :test, :development do
   gem 'capybara', '~> 2.6.2'
-  gem "rack-test", require: "rack/test"
-  gem "rspec"
+  gem 'rack-test', require: 'rack/test'
+  gem 'rspec'
+  gem 'mock_redis'
 end

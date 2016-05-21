@@ -8,10 +8,8 @@ class CardDeck
 
   CARD_INSTANCES =
     [:clubs, :diamonds, :hearts, :spades]
-      .product([2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A'])
-        .each_with_index.map do |arr, i|
-          Card.new(suit: arr[0], face: arr[1]).freeze
-        end.freeze
+    .product([2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A'])
+    .map { |arr| Card.new(suit: arr[0], face: arr[1]).freeze }.freeze
 
   def initialize
     reset unless cards

@@ -1,14 +1,8 @@
 require File.expand_path '../spec_helper.rb', __FILE__
-# TODO - найти способ запускать отдельный редис для тестового окружения, чтобы
-# не флашить девелопмент данные
 
 describe 'BlackJackPlayer' do
-  before do
-    $redis ||= Redis.new
-    $redis.flushall
-    card_deck.reset
-    player.reset
-    dealer.reset
+  before :each do
+    reset_all_data
   end
 
   it 'counts score' do
@@ -26,8 +20,8 @@ describe 'BlackJackPlayer' do
   end
 
   it 'returns its card instances' do
-    arr = [card(5,:clubs), card('Q',:spades)]
-    set_player_cards(arr)
+    arr = [card(5, :clubs), card('Q', :spades)]
+    set_cards(player, arr)
 
     expect(player.cards).to eq arr
   end
@@ -47,12 +41,8 @@ describe 'BlackJackPlayer' do
 end
 
 describe 'Card' do
-  before do
-    $redis ||= Redis.new
-    $redis.flushall
-    card_deck.reset
-    player.reset
-    dealer.reset
+  before :each do
+    reset_all_data
   end
 
   it 'returns card\'s value' do
@@ -69,23 +59,17 @@ describe 'Card' do
     expect(ace.value(11)).to eq 1
     expect(ace.value(22)).to eq 1
   end
-
 end
 
 describe 'Dealer' do
-  before do
-    $redis ||= Redis.new
-    $redis.flushall
-    card_deck.reset
-    player.reset
-    dealer.reset
+  before :each do
+    reset_all_data
   end
 
   it 'takes cards until score >= 17' do
     expect(dealer.score).to be_zero
     dealer.take_cards_to_score_17
 
-    expect(dealer.score >= 17).to be true
+    expect(dealer.score).to be >= 17
   end
-
 end

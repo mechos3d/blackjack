@@ -1,3 +1,3 @@
 require './blackjack'
 
-run BlackJackApp
+run BlackJackApp::Controller

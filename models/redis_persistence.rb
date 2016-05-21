@@ -1,3 +1,5 @@
+# попробовать закинуть Редис в константу или глобальную переменную -
+# тогда его из тестов проще будет флашить
 module RedisPersistence
   def set_value(key, value)
     redis.set(key, prepare(value))
@@ -29,6 +31,11 @@ module RedisPersistence
   end
 
   def redis
-    @redis ||= Redis.new
+    @redis ||=
+      if ENV['RACK_ENV'] == 'test'
+        MockRedis.new
+      else
+        Redis.new
+      end
   end
 end

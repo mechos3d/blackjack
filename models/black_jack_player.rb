@@ -21,8 +21,7 @@ class BlackJackPlayer
   end
 
   def reset
-    set_values("#{subject}.cards" => [],
-               "#{subject}.score" => 0)
+    self.cards_array = []
   end
 
   private
@@ -42,5 +41,4 @@ class BlackJackPlayer
   def subject
     self.class.to_s.downcase
   end
-
 end

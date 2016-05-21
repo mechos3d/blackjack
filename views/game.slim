@@ -35,14 +35,14 @@ body
 			  tr
 		  		- @dealer.cards&.each_with_index do |card, index|
 						td
-							- if !@win_lose && index == 0
+							- if !round_end? && index == 0
 								= "XXX___"
 							- else
 								= "#{card.face}:#{card.suit}___"
 	hr
 
 	div id="div_2" class="bordered"
-		- if @win_lose
+		- if round_end?
 			p Dealer_score
 			= @dealer.score
 	hr
@@ -53,7 +53,7 @@ body
 	hr
 
 	div id="div_win_lose" class="bordered"
-		- case @win_lose
+		- case player.win_lose
 		- when 'win'
 			p style="color: blue;" WIN
 		- when 'lose'
@@ -70,14 +70,14 @@ body
 			    		p Ставка не удвоена: недостаточно денег.
 				    - else
 				    	== form("/double_stake", :post)
-				    		== submit 'Double the stake', class: "button", disabled: player.stake_state == 'doubled' || @win_lose
+				    		== submit 'Double the stake', class: "button", disabled: player.stake_state == 'doubled' || round_end?
 
 			    td
 			    	== form("/hit_me", :post)
-			    		== submit 'Hit', class: "button", disabled: @win_lose
+			    		== submit 'Hit', class: "button", disabled: round_end?
 			    td
 			    	== form("/stand", :post)
-			    		== submit 'Stand', class: "button", disabled: @win_lose
+			    		== submit 'Stand', class: "button", disabled: round_end?
 			    td
 			    	== form("/another_round", :post)
 			    		== submit 'Another round', class: "button",

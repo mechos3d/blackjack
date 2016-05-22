@@ -1,6 +1,8 @@
 module BlackJackApp
   module InstanceMethods
     def check_enough_cards_left
+      # gorg TODO: должна быть разная логика - в начале проверяем что в колоде есть хотя бы 4 карты.
+      # потом - на hit и stand достаточно и одной
       redirect '/no_cards' if card_deck.not_enough_cards?
     end
 

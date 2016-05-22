@@ -24,13 +24,13 @@ class CardDeck
   end
 
   def reset
-    cards = Array(0..51).shuffle
-    set_value('cards', cards)
+    set_value('cards', Array(0..51).shuffle)
   end
 
   def not_enough_cards?
     return true unless cards
-    cards.size < 4
+    cards.size < 1 # gorg - временный stub - поправить эту логику позже
+    # cards.size < 4
   end
 
   def cards

@@ -51,7 +51,7 @@ describe 'Contoller_instance_methods' do
     end
 
     it 'dealer_score < 21 and dealer_score < player_score' do
-      dealer_score_is 15
+      dealer_score_is 17
       expect_player_to_win
     end
 

@@ -55,6 +55,7 @@ module BlackJackApp
       # как-то проверять, находится ли юзер в игре в данный момент
       # (persistence?))
       redirect '/set_stake' if stake_impossible?
+      puts card_deck.cards.to_s
       set_stake
       take_initial_cards
 

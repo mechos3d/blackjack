@@ -1,6 +1,4 @@
 def reset_all_data
-  # MockRedis.new.flushall # сейчас это не работает,
-  # так как видимо ссылка не на тот редис
   [card_deck, player, dealer].each(&:reset)
   player.reset_money
 end
@@ -33,28 +31,28 @@ def score_with(cards)
 end
 
 def card_deck_index(card)
-  CardDeck::CARD_INSTANCES.find_index { |dc| dc == card }
+  CardDeck::CARD_INSTANCES.find_index { |c| c == card }
 end
 
 def expect_player_to_win
   expect { Game.check_win_conditions }
     .to change { [player.money, player.win_lose] }
     .from([1000, 'unset'])
-    .to([1300, 'win'])
+    .to(  [1300, 'win'])
 end
 
 def expect_player_to_lose
   expect { Game.check_win_conditions }
     .to change { [player.money, player.win_lose] }
     .from([1000, 'unset'])
-    .to([700, 'lose'])
+    .to(  [700, 'lose'])
 end
 
 def expect_a_tie
   expect { Game.check_win_conditions }
     .to change { [player.money, player.win_lose] }
     .from([1000, 'unset'])
-    .to([1000, 'tie'])
+    .to(  [1000, 'tie'])
 end
 
 def player_score_is(n)
@@ -66,7 +64,7 @@ def dealer_score_is(n)
 end
 
 def set_score(subject, n)
-  # TODO: - этот метод уродлив, переделать бы на более универсальный
+  # TODO: this method is ugly.
   if n < 10
     set_cards(subject, [card(n, :clubs)])
   elsif n < 23

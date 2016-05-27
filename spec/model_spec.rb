@@ -52,10 +52,14 @@ describe 'Card' do
     expect(card('K', :diamonds).value).to eq 10
   end
 
-  it 'returns Ace\'s value depending on current sum' do
+  it 'Ace value returns 11 if current sum <11' do
     ace = card('A', :clubs)
     expect(ace.value).to eq 11
     expect(ace.value(10)).to eq 11
+  end
+
+  it 'Ace value returns 1 if current sum >=11' do
+    ace = card('A', :clubs)
     expect(ace.value(11)).to eq 1
     expect(ace.value(22)).to eq 1
   end

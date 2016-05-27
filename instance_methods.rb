@@ -16,6 +16,10 @@ module BlackJackApp
       dealer
     end
 
+    def set_cookie_persistence
+      Persistence::CookiePersistence.storage = session
+    end
+
     def player
       @player ||= Player.instance
     end

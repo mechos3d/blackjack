@@ -12,21 +12,21 @@ class Game
 
     def check_hit_win_condition
       if player.score > 21
-        player.lose
+        :lose
       elsif player.score == 21
-        dealer.score == 21 ? player.tie : player.win
+        dealer.score == 21 ? :tie : :win
       elsif dealer.score == 21
-        player.lose
+        :lose
       end
     end
 
     def check_stand_win_condition
       if dealer.score > 21 || player.score > dealer.score
-        player.win
+        :win
       elsif player.score == dealer.score
-        player.tie
+        :tie
       else
-        player.lose
+        :lose
       end
     end
 

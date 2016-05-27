@@ -15,7 +15,7 @@ class Card
     if face.is_a?(Fixnum)
       face
     elsif face == 'A'
-      sum > 10 ? 1 : 11 # туз имеет особую логику подсчета
+      sum > 10 ? 1 : 11 # special Ace logic
     else
       10
     end

@@ -7,9 +7,11 @@ describe 'BlackJack Controller' do
     expect(last_response.body).to include('Start the game')
   end
 
+  ## TODOs: check other controller actions there
+
 end
 
-describe 'Contoller_instance_methods' do
+describe 'Check win conditions' do
   before :each do
     reset_all_data
     player.stake = 300

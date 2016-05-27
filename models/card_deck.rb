@@ -1,10 +1,10 @@
 require 'singleton'
-require_relative 'redis_persistence'
+require_relative 'persistence'
 require_relative 'card'
 
 class CardDeck
   include Singleton
-  include RedisPersistence
+  include Persistence
 
   CARD_INSTANCES =
     [:clubs, :diamonds, :hearts, :spades]
@@ -17,7 +17,7 @@ class CardDeck
 
   def take(n)
     return [] unless n.to_i > 0
-    # предусмотреть обработку ситуации, когда n > @cards.size
+    # TODO:  what if n > @cards.size
     taken_cards = cards.take(n)
     set_value('cards', cards[n..-1])
     taken_cards
@@ -29,8 +29,7 @@ class CardDeck
 
   def not_enough_cards?
     return true unless cards
-    cards.size < 1 # gorg - временный stub - поправить эту логику позже
-    # cards.size < 4
+    cards.size < 1
   end
 
   def cards

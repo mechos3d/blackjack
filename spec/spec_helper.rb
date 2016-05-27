@@ -23,7 +23,6 @@ require 'rack/test'
 require 'rspec'
 require 'capybara/rspec'
 require 'pry'
-require 'mock_redis'
 require_relative 'helper_methods'
 
 ENV['RACK_ENV'] = 'test'

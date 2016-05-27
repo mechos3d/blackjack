@@ -1,10 +1,10 @@
 require 'singleton'
-require_relative 'redis_persistence'
+require_relative 'persistence'
 require_relative 'card'
 
 class CardDeck
   include Singleton
-  include RedisPersistence
+  include Persistence
 
   CARD_INSTANCES =
     [:clubs, :diamonds, :hearts, :spades]

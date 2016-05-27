@@ -4,23 +4,21 @@ require 'rubygems'
 require 'sinatra/form_helpers'
 require 'slim'
 require 'pry'
-require 'redis'
 require 'json'
-require 'mock_redis'
 
 require_relative './models/player'
 require_relative './models/dealer'
 require_relative './models/card_deck'
 require_relative './models/card'
 require_relative './models/game'
+require_relative './models/cookie_persistence'
 require_relative 'instance_methods'
 
 module BlackJackApp
   class Controller < Sinatra::Base
     include InstanceMethods
-    # TODO: условия win_lose переделаны - теперь это не @win_lose,
-    # а player.win_lose - но вьюхи еще не поменял
-    attr_reader :win_lose
+
+    enable :sessions
 
     helpers Sinatra::FormHelpers
     configure :development do
@@ -29,6 +27,7 @@ module BlackJackApp
 
     before do
       set_variables
+      set_cookie_persistence
     end
 
     get '/' do
@@ -39,7 +38,11 @@ module BlackJackApp
     end
 
     get '/game' do
-      Game.check_win_conditions
+      result = Game.check_win_conditions
+      if result
+        player.send(result)
+        redirect '/round_over'
+      end
       slim :game
     end
 
@@ -94,6 +97,12 @@ module BlackJackApp
 
       redirect '/set_stake'
     end
+
+    get '/round_over' do
+      # TODO: сделать здесь другую вьюшку
+      slim :game
+    end
+
 
     get '/game_over' do
       # TODO: сделать здесь другую вьюшку

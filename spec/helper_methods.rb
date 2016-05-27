@@ -1,6 +1,4 @@
 def reset_all_data
-  # MockRedis.new.flushall # сейчас это не работает,
-  # так как видимо ссылка не на тот редис
   [card_deck, player, dealer].each(&:reset)
   player.reset_money
 end

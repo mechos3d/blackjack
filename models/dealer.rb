@@ -1,4 +1,3 @@
-require 'singleton'
 require_relative 'black_jack_player'
 
 class Dealer < BlackJackPlayer

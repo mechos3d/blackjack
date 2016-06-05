@@ -9,13 +9,13 @@ describe 'BlackJack Controller' do
 
 end
 
-describe 'Contoller_instance_methods' do
+describe 'Win condition check' do
   before :each do
     reset_all_data
     player.stake = 300
   end
 
-  context 'player didn\'t click "stand"' do
+  context 'when player didn\'t click "stand"' do
     it 'player_score < 21, dealer_score < 21' do
       player_score_is 20
       dealer_score_is 18
@@ -44,7 +44,7 @@ describe 'Contoller_instance_methods' do
     end
   end
 
-  context 'player clicked "stand"' do
+  context 'when player clicked "stand"' do
     before :each do
       player.stand = 1
       player_score_is 18

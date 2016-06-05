@@ -1,8 +1,7 @@
 module BlackJackApp
   module InstanceMethods
     def check_enough_cards_left
-      # gorg TODO: должна быть разная логика - в начале проверяем что в колоде есть хотя бы 4 карты.
-      # потом - на hit и stand достаточно и одной
+      # gorg TODO: different logic for enough-cards on different stages of the game
       redirect '/no_cards' if card_deck.not_enough_cards?
     end
 
@@ -39,6 +38,10 @@ module BlackJackApp
 
     def set_default_stake_value
       @default_stake = player.money >= 50 ? 50 : player.money
+    end
+
+    def set_persistence_namespace
+      Persistence::Namespace.value = session[:session_id]
     end
   end
 end

@@ -1,6 +1,4 @@
 def reset_all_data
-  # MockRedis.new.flushall # сейчас это не работает,
-  # так как видимо ссылка не на тот редис
   [card_deck, player, dealer].each(&:reset)
   player.reset_money
 end
@@ -66,19 +64,16 @@ def dealer_score_is(n)
 end
 
 def set_score(subject, n)
-  # TODO: - этот метод уродлив, переделать бы на более универсальный
-  if n < 10
-    set_cards(subject, [card(n, :clubs)])
-  elsif n < 23
-    case n
-    when 20
-      set_cards(subject, [card('K', :clubs), card('K', :spades)])
-    when 21
-      set_cards(subject, [card('K', :clubs), card('A', :spades)])
-    when 22
-      set_cards(subject, [card('K', :clubs), card('K', :spades), card(2, :clubs)])
+  tens = n / 10
+  remainder = n % 10
+  arr =
+    case remainder
+    when 1
+       [card(10, :clubs)] * (tens - 1) + [card(2, :clubs), card(9, :clubs)]
+    when 0
+      [card(10, :clubs)] * tens
     else
-      set_cards(subject, [card('K', :clubs), card((n - 10), :spades)])
+      [card(10, :clubs)] * tens + [card(remainder, :clubs)]
     end
-  end
+  set_cards(subject, arr)
 end

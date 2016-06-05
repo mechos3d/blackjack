@@ -1,8 +1,8 @@
-require_relative 'redis_persistence'
+require_relative 'persistence'
 
 class BlackJackPlayer
   include Singleton
-  include RedisPersistence
+  include Persistence
 
   def score
     cards.inject(0) { |sum, card| card.value(sum) + sum }

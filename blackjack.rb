@@ -18,9 +18,9 @@ require_relative 'instance_methods'
 module BlackJackApp
   class Controller < Sinatra::Base
     include InstanceMethods
-    # TODO: условия win_lose переделаны - теперь это не @win_lose,
-    # а player.win_lose - но вьюхи еще не поменял
     attr_reader :win_lose
+
+    enable :sessions
 
     helpers Sinatra::FormHelpers
     configure :development do
@@ -29,12 +29,11 @@ module BlackJackApp
 
     before do
       set_variables
+      set_persistence_namespace
     end
 
     get '/' do
-      # Первоначальный вход
-      player.reset_money # TODO: после появления сессий ресетить деньги
-      # по условию и не в этом действии (не в get'e)
+      player.reset_money # TODO: reset player's money not in this action, and only if it's a new session
       slim :start
     end
 
@@ -49,13 +48,9 @@ module BlackJackApp
     end
 
     post '/start_round' do
-      # если юзер нажмет "назад" - он передходит на страницу set_stake -
-      # и может снова начать раунд (ему накидываются еще карты поверх
-      # существующих и он проигрывает, и так бесконечно. нужно здесь
-      # как-то проверять, находится ли юзер в игре в данный момент
-      # (persistence?))
+      # TODO BUG - if user clicks 'back' here - he goes to 'set_stake' screen
+      # and gets starter cards again - and loses.
       redirect '/set_stake' if stake_impossible?
-      puts card_deck.cards.to_s
       set_stake
       take_initial_cards
 
@@ -96,7 +91,7 @@ module BlackJackApp
     end
 
     get '/game_over' do
-      # TODO: сделать здесь другую вьюшку
+      # TODO: make a special view here
       slim :game
     end
 

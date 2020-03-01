@@ -10,7 +10,7 @@ gem 'sinatra-contrib', '~> 1.4.6'
 gem 'sinatra-formhelpers-ng'
 
 group :development do
-  gem 'rubocop', '~> 0.36.0', require: false
+  gem 'rubocop', '~> 0.48.1', require: false
   gem 'pry'
 end
 
